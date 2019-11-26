@@ -9,9 +9,9 @@ RUN mvn package
 FROM openjdk:8-jdk-alpine
  
 #Directorio de trabajo
-WORKDIR /tmp/
+WORKDIR /tmp/target/
 #Copiamos el jar en el directorio de trabajo
-COPY /target/agenciaApi-0.0.1-SNAPSHOT.jar /app
+#COPY /target/agenciaApi-0.0.1-SNAPSHOT.jar /app
 
 #Exponemos el puerto 8081
 EXPOSE 8081
