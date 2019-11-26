@@ -1,20 +1,16 @@
-FROM maven:3.5.2-jdk-8-alpine AS MAVEN_TOOL_CHAIN
-COPY pom.xml /tmp/
-COPY src /tmp/src/
-COPY agenciasBCP.json /tmp
-WORKDIR /tmp/
-RUN mvn package
+#
+# Build stage
+#
+FROM maven:3.5.2-jdk-8-alpine AS build
+COPY src /home/app/src
+COPY pom.xml /home/app
+RUN mvn -f /home/app/pom.xml clean package
 
-#De la imagen que partimos
+#
+# Package stage
+#
 FROM openjdk:8-jdk-alpine
- 
-#Directorio de trabajo
-WORKDIR /tmp/target/
-#Copiamos el jar en el directorio de trabajo
-#COPY /target/agenciaApi-0.0.1-SNAPSHOT.jar /app
+COPY --from=build /home/app/target/agenciaApi-0.0.1-SNAPSHOT.jar /usr/local/lib/agenciaApi-0.0.1-SNAPSHOT.jar
+COPY agenciasBCP.json /usr/local/lib
 
-#Exponemos el puerto 8081
-EXPOSE 8081
- 
-#Comando que se ejecutará una vez ejecutemos el contendor
-CMD ["java","-jar","agenciaApi-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-jar","/usr/local/lib/agenciaApi-0.0.1-SNAPSHOT.jar"]
